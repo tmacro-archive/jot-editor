@@ -8,7 +8,6 @@
 </template>
 
 <script>
-import autosize from 'autosize'
 import { codemirror, CodeMirror } from 'vue-codemirror'
 export default {
 	name: 'jot-editor',

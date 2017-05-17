@@ -4,8 +4,8 @@
 			<v-card-title>
 				<span class="teal--text mr-5">{{ title }}</span>
 				<!--<v-spacer></v-spacer>-->
-				
-				
+
+
 				</v-card-title>
 				<v-spacer></v-spacer>
 				<span class="grey--text text--lighten-1" >March 15, 2017 2:53 p.m.</span>
@@ -75,7 +75,6 @@ import { jotApi } from './storage.js'
 var marked = require('marked');
 var _ = require('lodash');
 var axios = require('axios');
-var autosizeInput = require('autosize-input');
 var endpoints = {
 	base: '//10.1.0.10:8081'
 }

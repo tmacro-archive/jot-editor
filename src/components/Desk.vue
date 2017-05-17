@@ -11,9 +11,9 @@
 					</div>
 				</v-col>
 				<v-col xs11 md3  class="mb-1">
-					<note-chip v-for="result in results" 
-								:key="result.id" 
-								:id="result.id" 
+					<note-chip v-for="result in results"
+								:key="result.id"
+								:id="result.id"
 								:title="result.title"
 								@open="openNote"
 								>
@@ -38,7 +38,7 @@
 				<!--<v-icon class="white--text">save</v-icon>-->
 				<span>Note Saved</span>
 				<v-btn icon class="white-text" @click.native="snackbar = false">
-					<v-icon class="white--text">close</v-icon>				
+					<v-icon class="white--text">close</v-icon>
 				</v-btn>
 			</v-snackbar>
 	</v-container>
@@ -46,7 +46,7 @@
 
 <script>
 import Stack from './Stack.vue'
-import NoteChip from './test/NoteChip.vue'
+import NoteChip from './NoteChip.vue'
 import bus from './eventBus.js'
 var axios = require('axios');
 var endpoints = {
