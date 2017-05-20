@@ -15,6 +15,7 @@
 								:key="result.id"
 								:id="result.id"
 								:title="result.title"
+								:tags="result.tags"
 								@open="openNote"
 								>
 					</note-chip>
@@ -46,7 +47,7 @@
 
 <script>
 import Stack from './Stack.vue'
-import NoteChip from './NoteChip.vue'
+import NoteChip from './bits/NoteChip.vue'
 import bus from './eventBus.js'
 var axios = require('axios');
 var endpoints = {

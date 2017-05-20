@@ -86,7 +86,7 @@ export default {
 	height: 100%;
 	width: 75%;
 	margin: auto;
-	
+
 }
 input:focus {
 }

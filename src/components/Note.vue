@@ -1,8 +1,19 @@
 <template>
 	<v-card class="mb-3">
 		<v-card-row class="grey lighten-3">
-			<v-card-title>
-				<span class="teal--text mr-5">{{ title }}</span>
+			<v-card-title class="title">
+				<template v-if="editing">
+					<v-text-field
+						name="input-1-3"
+						:label="title"
+						v-model="title"
+						single-line
+						class="search mr-5">
+					</v-text-field>
+				</template>
+				<template v-else>
+					<span class="teal--text mr-5 mb-3">{{ title }}</span>
+				</template>
 				<!--<v-spacer></v-spacer>-->
 
 
@@ -36,8 +47,19 @@
 		</v-card-row>
 		<v-card-row>
 
-			<v-chip v-for="tag in tags">{{ tag }}</v-chip>
-			<v-chip v-if="adding_tag">
+			<note-tag v-for="tag in tags"
+				:content="tag"
+				:key="tag"
+				:can_close="editing"
+				:edit="false"
+				@close="removeTag"
+			></note-tag>
+			<note-tag v-if="editing"
+				:content="null"
+				:edit="false"
+				@save="addTag">
+			</note-tag>
+			<!--<v-chip v-if="adding_tag">
 				<input></input>
 				<v-icon right>check</v-icon>
 			</v-chip>
@@ -47,7 +69,7 @@
 					@click.native="adding_tag=true"
 					>
 				<v-icon>add</v-icon>
-			</v-btn>
+			</v-btn>-->
 		</v-card-row>
 		<template v-if="editing">
 			<v-card-row>
@@ -72,6 +94,7 @@
 import Compose from './Compose.vue'
 import bus from './eventBus.js'
 import { jotApi } from './storage.js'
+import Tag from './bits/Tag.vue'
 var marked = require('marked');
 var _ = require('lodash');
 var axios = require('axios');
@@ -159,11 +182,22 @@ export default {
 			console.log(data)
 			this.title = d.title
 			this.body = d.body
-			this.tag = d.tags
+			this.tags = d.tags
+		},
+		removeTag: function (tag) {
+			this.tags = _.filter(this.tags, function(t) {
+								return  t != tag;
+							})
+			// this.save()
+		},
+		addTag: function(tag) {
+			this.tags.push(tag)
+			// this.save()
 		}
 	},
 	components: {
 		'jot-editor': Compose,
+		'note-tag': Tag
 	}
 }
 </script>
@@ -172,6 +206,16 @@ export default {
 <style scoped>
 input:focus {
 	outline: 0px;
+}
+
+.search {
+	padding: 0;
+	margin-top: 0;
+	margin-bottom: 0;
+}
+
+.title {
+	padding-bottom: 0;
 }
 /*h1 {
 	font-size: 20px;

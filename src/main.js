@@ -4,7 +4,9 @@ import Vue from 'vue'
 import Jot from './Jot'
 import router from './router'
 import Vuetify from 'vuetify'
+var VueAutosize = require('vue-autosize')
 
+Vue.use(VueAutosize)
 Vue.use(Vuetify)
 Vue.config.productionTip = false
 
