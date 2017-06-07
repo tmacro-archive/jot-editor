@@ -1,7 +1,7 @@
 var axios = require('axios');
 
 var endpoints = {
-	base: '//10.1.0.10:8081'
+	base: '//localhost:8081'
 }
 
 endpoints.note = endpoints.base + '/note'
@@ -31,15 +31,21 @@ var jotApi = {
 				callback(resp.data)
 			})
 	},
-	update: function (id) {},
-	search: function () {} 
+	update: function (note, callback) {
+		axios.patch(endpoints.note, note)
+			.then(function (resp){
+				console.log(resp)
+				callback(resp.data)
+			})
+	},
+	search: function () {}
 }
 
 var noteStorage = {
 	create: function (id) {},
 	get: function (id) {},
 	update: function () {},
-	search: function () {} 
+	search: function () {}
 }
 export { jotApi }
 // export default bus

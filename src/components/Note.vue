@@ -1,5 +1,5 @@
 <template>
-	<v-card class="mb-3">
+	<v-card class="mb-3 white">
 		<v-card-row class="grey lighten-3">
 			<v-card-title class="title">
 				<template v-if="editing">
@@ -71,21 +71,25 @@
 				<v-icon>add</v-icon>
 			</v-btn>-->
 		</v-card-row>
-		<template v-if="editing">
-			<v-card-row>
-				<v-card-text>
-					<jot-editor class="editor"
-								:value="edited"
-								:handle-change="update"
-								v-on:change="update"
-								v-on:save="save">
-					</jot-editor>
-				</v-card-text>
-			</v-card-row>
-		</template>
+			<!--<v-card-row>
+			</v-card-row>-->
 		<v-card-row>
-			<v-card-text v-html="compiled" class="ma-3">
-			</v-card-text>
+			<template v-if="editing">
+				<v-col xs12 md6>
+					<v-card-text>
+						<jot-editor class="editor"
+									:value="edited"
+									:handle-change="update"
+									v-on:change="update"
+									v-on:save="save">
+						</jot-editor>
+					</v-card-text>
+				</v-col>
+			</template>
+				<v-col xs12 md6>
+					<v-card-text v-html="compiled" class="ma-3">
+					</v-card-text>
+				</v-col>
 		</v-card-row>
 	</v-card>
 </template>
@@ -98,6 +102,51 @@ import Tag from './bits/Tag.vue'
 var marked = require('marked');
 var _ = require('lodash');
 var axios = require('axios');
+// var Remarkable = require('remarkable');
+// var md = new Remarkable();
+// import md from './markd.js'
+
+var Remarkable = require('remarkable');
+
+var md = new Remarkable();
+
+const expr = {
+	task: /^\s*\[([xX\s])?\]\s?(.+)/
+}
+
+var parseTask = function (state, check) {
+	var match = expr.task.exec(state.src.slice(state.pos))
+	if (!match) return false
+	console.log(match)
+	console.log(state)
+	debugger;
+	if (!check) {
+		state.push({
+			type: 'task',
+			level: state.level,
+			content: match[2]
+			// complete: match[1] == 'x' || match[1] == 'X'
+		})
+	}
+	state.pos += match[0].length
+}
+
+var renderTask = function (tokens, id, options, env) {
+	if (tokens[id] == 'task') {
+		console.log('rendering task')
+		console.log(env)
+		return '<input type="checkbox" value="true"></input>'
+	}
+}
+
+var jotPlugin = function (md, options) {
+	md.inline.ruler.push('jotTask', parseTask)
+	md.renderer.rules.parsTask = renderTask
+	// md.renderer.rules.push('task', renderTask, {})
+}
+
+md.use(jotPlugin)
+
 var endpoints = {
 	base: '//10.1.0.10:8081'
 }
@@ -139,7 +188,8 @@ export default {
 				this.edited = this.body
 			}
 			console.log('rendering markdown')
-			return marked(this.edited, { sanitize: true })
+			// return marked(this.edited, { sanitize: true })
+			return md.render(this.edited)
 		}
 	},
 	methods: {
@@ -152,23 +202,12 @@ export default {
 			this.$emit('edit', this.id)
 		},
 		save: function () {
-			var v = this
-			axios.patch(endpoints.note, {
+			jotApi.update({
 				id: this.id,
 				title: this.title,
 				body: this.edited,
 				tags: this.tags
-			})
-			.then(function(resp){
-				// console.log('saved note ' + id)
-				console.log(resp.data)
-				v.editing = false
-				v.$emit('save', v.id)
-				bus.$emit('note:save', v.id)
-			})
-			.then(function(error){
-				console.log(error)
-			})
+			}, this.onSave)
 		},
 		discard: function () {
 			this.edited = ''
@@ -183,6 +222,12 @@ export default {
 			this.title = d.title
 			this.body = d.body
 			this.tags = d.tags
+		},
+		onSave: function (data) {
+			console.log(data)
+			this.editing = false
+			this.$emit('save', this.id)
+			bus.$emit('note:save', this.id)
 		},
 		removeTag: function (tag) {
 			this.tags = _.filter(this.tags, function(t) {
@@ -276,4 +321,311 @@ input:focus {
 	width: 100%;
 	border: 1px solid #C7C6CD;
 }*/
+/*
+   This document has been created with Marked.app <http://marked2app.com>
+   Please leave this notice in place, along with any additional credits below.
+   ---------------------------------------------------------------
+   Title: Kult
+   Author: Peter Sziebig - @bigpe
+   Description: Easy to read
+*/
+
+@font-face {
+    font-family: "Ubuntu";
+    font-style: normal;
+    font-weight: 300;
+    src: local("Ubuntu Light"), local("Ubuntu-Light"), url("http://themes.googleusercontent.com/static/fonts/ubuntu/v4/WtcvfJHWXKxx4x0kuS1kobO3LdcAZYWl9Si6vvxL-qU.woff") format("woff");
+}
+@font-face {
+    font-family: "Ubuntu";
+    font-style: normal;
+    font-weight: 400;
+    src: local("Ubuntu"), url("http://themes.googleusercontent.com/static/fonts/ubuntu/v4/CGXpU_uR_FUfdeyCjAWgZ-vvDin1pK8aKteLpeZ5c0A.woff") format("woff");
+}
+@font-face {
+    font-family: "Ubuntu";
+    font-style: normal;
+    font-weight: 500;
+    src: local("Ubuntu Medium"), local("Ubuntu-Medium"), url("http://themes.googleusercontent.com/static/fonts/ubuntu/v4/gMhvhm-nVj1086DvGgmzB7O3LdcAZYWl9Si6vvxL-qU.woff") format("woff");
+}
+@font-face {
+    font-family: "Ubuntu";
+    font-style: normal;
+    font-weight: 700;
+    src: local("Ubuntu Bold"), local("Ubuntu-Bold"), url("http://themes.googleusercontent.com/static/fonts/ubuntu/v4/nsLtvfQoT-rVwGTHHnkeJrO3LdcAZYWl9Si6vvxL-qU.woff") format("woff");
+}
+@font-face {
+    font-family: "Ubuntu";
+    font-style: italic;
+    font-weight: 300;
+    src: local("Ubuntu Light Italic"), local("Ubuntu-LightItalic"), url("http://themes.googleusercontent.com/static/fonts/ubuntu/v4/DZ_YjBPqZ88vcZCcIXm6VqfTCPadK0KLfdEfFtGWCYw.woff") format("woff");
+}
+
+
+
+html {
+    font-size: 100%;
+}
+html, button, input, select, textarea {
+    font-family: sans-serif;
+}
+
+html, body, button, input, select, textarea {
+    color: #57534A;
+    font-family: "Ubuntu","Myriad Pro","Myriad",sans-serif;
+    font-size: 18px;
+	font-weight: 300;
+}
+
+body{
+    margin: 0 auto;
+    background-color: #FFFFFF;
+}
+
+body, textarea {
+    line-height: 1.4;
+}
+
+
+body:after {
+    clear: both;
+    content: "";
+    display: table;
+}
+
+body {
+    padding-left: 6rem;
+    padding-right: 6rem;
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 42rem;
+    display: block;
+}
+
+
+
+h1, h2, h3, dt {
+    color: #423F37;
+    font-weight: 700;
+}
+
+h1 {
+    font-size: 2em;
+    margin: 0.67em 0;
+}
+h2, .article-list .article-title {
+    font-size: 1.5em;
+    margin: 0.83em 0;
+}
+h3, dt {
+    font-size: 1.17em;
+    margin: 1em 0;
+}
+h4 {
+    font-size: 1em;
+    margin: 1.33em 0;
+}
+h5 {
+    font-size: 0.83em;
+    margin: 1.67em 0;
+}
+h6 {
+    font-size: 0.75em;
+    margin: 2.33em 0;
+}
+
+
+a {
+    color: #8DB359;
+    cursor: pointer;
+    outline: 0 none;
+    text-decoration: underline;
+}
+
+a:hover {
+    outline: 0 none;
+    color: #739544;
+}
+
+
+p, pre {
+    margin: 1em 0;
+}
+code, kbd, pre, samp {
+    font-family: monospace,serif;
+    font-size: 1em;
+    margin: 0;
+    padding: 0;
+
+}
+pre {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+
+pre {
+    background-color: #F8F5F0;
+    font-size: 0.7rem;
+    overflow-x: auto;
+    padding: 1.3rem;
+    position: relative;
+    white-space: pre;
+    word-wrap: normal;
+}
+pre, code, kbd, samp {
+    margin: 0;
+}
+code, kbd, pre, samp {
+    font-family: monospace,serif;
+}
+
+code {
+    color: #423F37;
+}
+
+
+aside {
+    display: block;
+    float: right;
+    width: 390px;
+}
+
+
+b, strong {
+    font-weight: bold;
+    color: #423F37;
+    font-weight: 700;
+}
+
+blockquote {
+    color: #423F37;
+    font-size: 1.25em;
+    font-weight: 700;
+	margin: 1em 40px;
+}
+
+blockquote {
+    margin-bottom: 2em;
+    margin-top: 2em;
+}
+
+figure {
+	margin-left: -4.5rem;
+    margin-right: -4.5rem;
+    margin-bottom: 2em;
+    margin-top: 2em;
+}
+
+
+hr {
+    -moz-border-bottom-colors: none;
+    -moz-border-left-colors: none;
+    -moz-border-right-colors: none;
+    -moz-border-top-colors: none;
+    border-color: -moz-use-text-color -moz-use-text-color #ECE6DA;
+    border-image: none;
+    border-style: none none solid;
+    border-width: medium medium 1px;
+    margin: 3em 6em;
+}
+
+
+img {
+    max-width: 100%;
+    display: block;
+    border: 0 none;
+}
+
+
+ol > li:before {
+    color: #423F37;
+    content: counter(ol, decimal) ".";
+    counter-increment: ol;
+    font-weight: 700;
+    margin-right: 0.333em;
+    position: absolute;
+    right: 100%;
+}
+
+ul > li:before {
+    background-color: #423F37;
+    border-radius: 14px 14px 14px 14px;
+    content: "";
+    height: 6px;
+    margin-right: 0.333em;
+    margin-top: 0.55em;
+    position: absolute;
+    right: 100%;
+    width: 6px;
+}
+
+ol, ul, dl {
+    margin-left: 2rem;
+    padding: 0;
+}
+ol {
+    counter-reset: ol;
+}
+li + li, dd + dt {
+    margin-top: 0.5em;
+}
+
+ul > li {
+    position: relative;
+}
+
+ol > li {
+    position: relative;
+}
+li {
+    list-style: none outside none;
+}
+
+
+figure > figcaption {
+    margin-top: 0.5em;
+}
+small, dd, figcaption {
+    color: #A19C91;
+    display: block;
+    font-size: 0.8rem;
+    font-style: italic;
+    line-height: 1.2;
+}
+
+
+tbody{display:table-row-group}
+tfoot{display:table-footer-group}
+table{margin-bottom:2em;font-size: 0.8em;padding:0;border-collapse:collapse;-webkit-box-shadow:1px 1px 2px rgba(0,0,0,.35);width:80%;margin:0 auto 2em auto}
+table th,table td{padding:10px 10px 9px;line-height:18px;text-align:left}
+table th{
+padding-top:9px;text-transform:uppercase;vertical-align:middle}
+table td{vertical-align:top;border-top:1px solid #ddd;}
+table tbody th{border-top:1px solid #ddd;vertical-align:top}
+table{border:1px solid #ddd;border-collapse:separate;*border-collapse:collapse;-webkit-border-radius:4px;-moz-border-radius:4px;border-radius:4px}
+table th+th,table td+td,table th+td{border-left:1px solid #ddd}
+table thead tr:first-child th:first-child,table tbody tr:first-child td:first-child{-webkit-border-radius:4px 0 0 0;-moz-border-radius:4px 0 0 0;border-radius:4px 0 0 0}
+table thead tr:first-child th:last-child,table tbody tr:first-child td:last-child{-webkit-border-radius:0 4px 0 0;-moz-border-radius:0 4px 0 0;border-radius:0 4px 0 0}
+table tbody tr:last-child td:first-child{-webkit-border-radius:0 0 0 4px;-moz-border-radius:0 0 0 4px;border-radius:0 0 0 4px}
+table tbody tr:last-child td:last-child{-webkit-border-radius:0 0 4px 0;-moz-border-radius:0 0 4px 0;border-radius:0 0 4px 0}
+tbody tr:nth-child(odd){background-color:rgba(0,0,0,0.03)}
+
+caption{display:table-caption;font-weight:300;font-size:1.3em;text-transform:uppercase;letter-spacing:2px;word-spacing:.2em;background:rgba(0,0,0,.75);color:#EEE;padding:4px;-webkit-border-radius:4px;margin:4px 0;-webkit-box-shadow:2px 2px 2px rgba(0,0,0,.35)}
+
+/* grey out placeholders */
+:-moz-placeholder {
+  color: #bfbfbf;
+}
+::-webkit-input-placeholder {
+  color: #bfbfbf;
+}
+
+
+.article-date {
+    color: #C7C2B8;
+    display: block;
+    font-size: 0.8rem;
+}
+
+
 </style>

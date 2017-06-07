@@ -12,6 +12,7 @@
   "dependencies": {
     "axios": "^0.16.1",
     "marked": "^0.3.6",
+    "remarkable": "^1.7.1",
     "vue": "^2.2.6",
     "vue-autosize": "^1.0.0",
     "vue-codemirror": "^3.0.7",
