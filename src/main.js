@@ -3,11 +3,8 @@
 import Vue from 'vue'
 import Jot from './Jot'
 import router from './router'
-import Vuetify from 'vuetify'
-var VueAutosize = require('vue-autosize')
+import bulma from './assets/css/bulma.css'
 
-Vue.use(VueAutosize)
-Vue.use(Vuetify)
 Vue.config.productionTip = false
 
 /* eslint-disable no-new */
