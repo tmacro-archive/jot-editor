@@ -4,6 +4,7 @@ import Vue from 'vue'
 import Jot from './Jot'
 import router from './router'
 import bulma from './assets/css/bulma.css'
+import helper from './assets/css/helper.css'
 
 Vue.config.productionTip = false
 
